@@ -46,6 +46,7 @@
     <Compile Include="FoodCategory.cs" />
     <Compile Include="MenuCategory.cs" />
     <Compile Include="Models\MenuItem.cs" />
+    <Compile Include="Models\Staff.cs" />
     <Compile Include="Models\Table.cs" />
     <Compile Include="OrderStatus.cs" />
     <Compile Include="OrderType.cs" />

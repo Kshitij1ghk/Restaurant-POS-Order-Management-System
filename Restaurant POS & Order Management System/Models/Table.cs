@@ -17,7 +17,7 @@ namespace Restaurant_POS___Order_Management_System.Models
         {
             if (tableNumber<= 0)
             {
-                throw new ArgumentException("Table Id is invalid must be greater than zero");
+                throw new ArgumentException("Table number is invalid must be greater than zero");
             }
             if (capacity < 1)
             {

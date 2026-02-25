@@ -43,8 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FoodCategory.cs" />
+    <Compile Include="MenuCategory.cs" />
+    <Compile Include="Models\MenuItem.cs" />
+    <Compile Include="Models\Table.cs" />
+    <Compile Include="OrderStatus.cs" />
+    <Compile Include="OrderType.cs" />
+    <Compile Include="PaymentMethod.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StaffRole.cs" />
+    <Compile Include="TableStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

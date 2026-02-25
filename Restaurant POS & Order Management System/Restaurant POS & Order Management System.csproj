@@ -48,6 +48,7 @@
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderItem.cs" />
+    <Compile Include="Models\Receipt.cs" />
     <Compile Include="Models\Staff.cs" />
     <Compile Include="Models\Table.cs" />
     <Compile Include="OrderStatus.cs" />

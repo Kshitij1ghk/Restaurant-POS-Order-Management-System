@@ -22,7 +22,7 @@ namespace Restaurant_POS___Order_Management_System.Models
         public bool IsAvailable {  get; private set; }
 
         public MenuItem(int menuItemId,string name,decimal price,MenuCategory menucategory,FoodCategory foodcategory
-            ,string description)
+            ,string description,bool isAvailable)
         {
             if (menuItemId <= 0)
             {
@@ -49,7 +49,7 @@ namespace Restaurant_POS___Order_Management_System.Models
             FoodCategory= foodcategory;
             Description = description;
 
-            IsAvailable = true;
+            isAvailable = true;
         }
     }
 }

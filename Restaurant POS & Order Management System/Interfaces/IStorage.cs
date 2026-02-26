@@ -9,22 +9,22 @@ namespace Restaurant_POS___Order_Management_System.Interfaces
 {
     public interface IStorage
     {
-        void SaveMenuItems(List<MenuItem> menuItems);
-        void LoadMenuItems();
+        void SaveMenuItems(Dictionary<int,MenuItem> menuitems);
+        Dictionary<int, MenuItem> LoadMenuItems();
 
-        void SaveOrders(List<Order> orders);
-        void LoadOrders();
+        void SaveOrders(Dictionary<int, Order> orders);
+        Dictionary<int, Order> LoadOrders();
 
-        void SaveOrderItems(List<OrderItem> orderItems);
-        void LoadOrderItems();
+        void SaveOrderItems(Dictionary<int,OrderItem> orderItems);
+        Dictionary<int, List<OrderItem>> LoadOrderItems();
 
-        void SaveTables(List<Table> tables);
-        void LoadTables();
+        void SaveTables(Dictionary<int,Table> tables);
+        Dictionary<int, Table> LoadTables();
 
-        void SaveStaff(List<Staff> staffs);
-        void LoadStaff();
+        void SaveStaff(Dictionary<int,Staff> staffs);
+        Dictionary<int, Staff> LoadStaff();
 
-        void SaveReceipts(List<Receipt> receipts);
-        void LoadReceipts();
+        void SaveReceipts(Dictionary<int,Receipt> receipts);
+        Dictionary<int, Receipt> LoadReceipts();    
     }
 }

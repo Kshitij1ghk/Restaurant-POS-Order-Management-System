@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -92,6 +93,38 @@ namespace Restaurant_POS___Order_Management_System.Services
         }
         public Dictionary<int, Order> LoadOrders()
         {
+            Dictionary<int,Order> orders = new Dictionary<int,Order>();
+            if (!File.Exists(OrdersFile))
+                return orders;
+            string[] lines=File.ReadAllLines(OrdersFile);
+            for(int i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(lines[i]))
+                    continue;
+                try
+                {
+                    string[] parts = lines[i].Split(',');
+                    int orderId = int.Parse(parts[0]);
+                    OrderType orderType = (OrderType)Enum.Parse(typeof(OrderType), parts[1]);
+                    OrderStatus status = (OrderStatus)Enum.Parse(typeof(OrderStatus), parts[2]);
+                    int? tableNumber = string.IsNullOrEmpty(parts[3]) ? (int?)null : int.Parse(parts[3]);
+                    int staffId = int.Parse(parts[4]);
+                    DateTime createdAt = DateTime.Parse(parts[5]);
+                    DateTime? completedAt = string.IsNullOrEmpty(parts[6]) ? (DateTime?)null : DateTime.Parse(parts[6]);
+                    PaymentMethod? paymentMethod = string.IsNullOrEmpty(parts[7])?(PaymentMethod?)null:(PaymentMethod)Enum.Parse(typeof(PaymentMethod), parts[7]);
+                    decimal totalAmount = decimal.Parse(parts[8]);
+
+                    Order order = new Order(orderId, orderType, status, tableNumber, staffId, createdAt,
+                        completedAt,paymentMethod,totalAmount);
+                    orders.Add(orderId,order);
+
+                }
+                catch(Exception ex)
+                {
+                    continue;
+                }
+            }
+            return orders;
 
         }
     }

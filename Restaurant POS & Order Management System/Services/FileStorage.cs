@@ -224,5 +224,47 @@ namespace Restaurant_POS___Order_Management_System.Services
             return tables;
 
         }
+        public void SaveStaff(Dictionary<int, Staff> staffs)
+        {
+            List<string> lines = new List<string>();
+            lines.Add("StaffId,Name,Role,IsOnDuty");
+            foreach(Staff staff in staffs.Values)
+            {
+                string line = staff.StaffId + "," +
+                    staff.Name + "," +
+                    staff.IsOnDuty;
+                lines.Add(line);
+            }
+            File.WriteAllLines(StaffFile, lines);
+        }
+
+        public Dictionary<int, Staff> LoadStaff()
+        {
+            Dictionary<int,Staff> staffs=new Dictionary<int, Staff> ();
+            if(!File.Exists(StaffFile))
+                return staffs;
+            string[] lines=File.ReadAllLines(StaffFile);
+            for(int i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(lines[i]))
+                    continue;
+                try
+                {
+                    string[] parts = lines[i].Split(',');
+                    int staffId = int.Parse(parts[0]);
+                    string name = parts[1];
+                    StaffRole staffRole = (StaffRole)Enum.Parse(typeof(StaffRole), parts[2]);
+                    bool isOnDuty = bool.Parse(parts[3]);
+
+                    Staff staff = new Staff(staffId, name,staffRole,isOnDuty);
+                    staffs.Add(staffId, staff);
+                }
+                catch(Exception ex)
+                {
+                    continue;
+                }
+            }
+            return staffs;
+        }
     }
 }

@@ -30,5 +30,20 @@ namespace Restaurant_POS___Order_Management_System.Models
             StaffRole = staffRole;
             IsOnDuty=true;
         }
+        public Staff(int staffId, string name, StaffRole staffRole,bool isOnDuty)
+        {
+            if (staffId <= 0)
+            {
+                throw new ArgumentException("The staff ID should be greater than zero");
+            }
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("The staff name should not be empty");
+            }
+            StaffId = staffId;
+            Name = name.ToUpper();
+            StaffRole = staffRole;
+            IsOnDuty =isOnDuty;
+        }
     }
 }

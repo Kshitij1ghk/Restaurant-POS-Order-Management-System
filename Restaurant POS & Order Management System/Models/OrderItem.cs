@@ -10,7 +10,7 @@ namespace Restaurant_POS___Order_Management_System.Models
     {
         public int OrderId { get; private set; }
         
-        public int MenuItemId1 {  get; private set; }
+        public int MenuItemId {  get; private set; }
         public int Quantitiy {  get; private set; }
 
         public Decimal PriceAtTimeOfOrder {  get; private set; }
@@ -32,10 +32,10 @@ namespace Restaurant_POS___Order_Management_System.Models
             }
             if(quantity <= 0)
             {
-                throw new ArgumentException("quantity can't be less than or equal to zero!")
+                throw new ArgumentException("quantity can't be less than or equal to zero!");
             }
             orderId = OrderId;
-            MenuItemId1 = menuItemId;
+            MenuItemId = menuItemId;
             Quantitiy = quantity;
             PriceAtTimeOfOrder = priceAtTimeOfOrder;
         }

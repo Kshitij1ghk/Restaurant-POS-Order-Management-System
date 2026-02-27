@@ -125,7 +125,62 @@ namespace Restaurant_POS___Order_Management_System.Services
                 }
             }
             return orders;
+        }
 
+        public void SaveOrderItems(Dictionary<int, List<OrderItem>> orderaItems)
+        {
+            List<string> lines=new List<string>();
+            lines.Add("OrderId,MenuItemId,Quantity,PriceAtTimeOfOrder");
+            foreach(KeyValuePair<int,List<OrderItem>> pair in orderaItems)
+            {
+                foreach(OrderItem orderItem in pair.Value)
+                {
+                    string line = orderItem.OrderId + "," +
+                        orderItem.MenuItemId + "," +
+                        orderItem.Quantitiy + "," +
+                        orderItem.PriceAtTimeOfOrder;
+                    lines.Add(line);
+                }
+            }
+            File.WriteAllLines(OrderItemsFile, lines);
+        }
+
+        public Dictionary<int, List<OrderItem>> LoadOrderItems()
+        {
+            Dictionary<int, List<OrderItem>> orderitems = new Dictionary<int, List<OrderItem>>();
+            if (!File.Exists(OrderItemsFile))
+                return orderitems;
+            string[] lines = File.ReadAllLines(OrderItemsFile);
+            for(int i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(lines[i]))
+                    continue;
+                try
+                {
+                    string[] parts = lines[i].Split(',');
+                    int orderId = int.Parse(parts[0]);
+                    int menuItemId = int.Parse(parts[1]);
+                    int quantity = int.Parse(parts[2]);
+                    decimal priceAtTimeOfOrder = decimal.Parse(parts[3]);
+
+                    OrderItem orderItem = new OrderItem(orderId, menuItemId, quantity, priceAtTimeOfOrder);
+                    if (orderitems.ContainsKey(orderId))
+                    {
+                        orderitems[orderId].Add(orderItem);
+                    }
+                    else
+                    {
+                        List<OrderItem> newList = new List<OrderItem>();
+                        newList.Add(orderItem);
+                        orderitems.Add(orderId, newList);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                }
+            }
+            return orderitems;
         }
     }
 }

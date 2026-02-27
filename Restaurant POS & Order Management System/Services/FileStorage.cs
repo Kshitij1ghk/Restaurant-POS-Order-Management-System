@@ -31,7 +31,7 @@ namespace Restaurant_POS___Order_Management_System.Services
                     menuitem.Price + "," +
                     menuitem.MenuCategory + "," +
                     menuitem.FoodCategory + "," +
-                    menuitem.Description + "," +
+                    SafeDescription + "," +
                     menuitem.IsAvailable;
                 lines.Add(line);
             }
@@ -44,7 +44,7 @@ namespace Restaurant_POS___Order_Management_System.Services
             if (!File.Exists(MenuItemsFile))
                 return menuitems;
             string[] lines=File.ReadAllLines(MenuItemsFile);
-            for(int i=0;i<lines.Length; i++)
+            for(int i=1;i<lines.Length; i++)
             {
                 if (string.IsNullOrEmpty(lines[i]))
                     continue;
@@ -53,7 +53,7 @@ namespace Restaurant_POS___Order_Management_System.Services
                     string[] parts = lines[i].Split(',');
                     int menuItemId = int.Parse(parts[0]);
                     string name = parts[1];
-                    int price = int.Parse(parts[2]);
+                    decimal price = decimal.Parse(parts[2]);
                     MenuCategory menuCategory = (MenuCategory)Enum.Parse(typeof(MenuCategory), parts[3]);
                     FoodCategory foodCategory = (FoodCategory)Enum.Parse(typeof(FoodCategory), parts[4]);
                     string description = parts[5];
@@ -68,6 +68,31 @@ namespace Restaurant_POS___Order_Management_System.Services
                 }
             }
             return menuitems;
+        }
+
+        public void SaveOrders(Dictionary<int, Order> orders)
+        {
+            List<string> lines = new List<string>();
+            lines.Add("OrderId,OrderType,Status,TableNumber,StaffId,CreatedAt,CompletedAt" +
+                ",PaymentMethod,TotalAmount");
+            foreach (Order order in orders.Values)
+            {
+                string line = order.OrderId + "," +
+                    order.OrderType + "," +
+                    order.Status + "," +
+                    order.TableNumber + "," +
+                    order.StaffId + "," +
+                    order.CreatedAt + "," +
+                    order.CompletedAt + "," +
+                    order.PaymentMethod + "," +
+                    order.TotalAmount;
+                lines.Add(line);
+            }
+            File.WriteAllLines(OrdersFile, lines);
+        }
+        public Dictionary<int, Order> LoadOrders()
+        {
+
         }
     }
 }

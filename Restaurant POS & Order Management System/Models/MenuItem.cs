@@ -22,7 +22,7 @@ namespace Restaurant_POS___Order_Management_System.Models
         public bool IsAvailable {  get; private set; }
 
         public MenuItem(int menuItemId,string name,decimal price,MenuCategory menucategory,FoodCategory foodcategory
-            ,string description,bool isAvailable)
+            ,string description)
         {
             if (menuItemId <= 0)
             {
@@ -48,8 +48,40 @@ namespace Restaurant_POS___Order_Management_System.Models
             MenuCategory= menucategory;
             FoodCategory= foodcategory;
             Description = description;
+            IsAvailable = true;
 
-            isAvailable = true;
+            
+        }
+        public MenuItem(
+    int menuItemId,
+    string name,
+    decimal price,
+    MenuCategory menuCategory,
+    FoodCategory foodCategory,
+    string description,
+    bool isAvailable)
+        {
+            if (menuItemId <= 0)
+                throw new ArgumentException("Invalid Id");
+
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name cannot be empty");
+
+            if (price <= 0)
+                throw new ArgumentException("Price must be greater than zero");
+
+            if (string.IsNullOrWhiteSpace(description))
+                throw new ArgumentException("Description cannot be empty");
+
+            MenuItemId = menuItemId;
+            Name = name.ToUpper();
+            Price = price;
+            MenuCategory = menuCategory;
+            FoodCategory = foodCategory;
+            Description = description;
+
+            // IMPORTANT
+            IsAvailable = isAvailable;
         }
     }
 }

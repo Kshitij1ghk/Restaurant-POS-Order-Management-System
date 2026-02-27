@@ -62,6 +62,43 @@ namespace Restaurant_POS___Order_Management_System.Models
             TotalAmount=0m;
             
         }
+        public Order(int orderId, OrderType orderType,OrderStatus status,int? tableNumber,int staffId,DateTime createdAt,
+            DateTime? completedAt,PaymentMethod? paymentMethod,decimal totalAmount)
+        {
+            if (orderId <= 0)
+            {
+                throw new ArgumentException("Order id cant be less than or equal to zero");
+            }
+            if (staffId <= 0)
+            {
+                throw new ArgumentException("staff id cannot be less than or equal to zero");
+            }
+            if (totalAmount < 0)
+            {
+                throw new ArgumentException("Total Amount cant be less than zero");
+            }
+
+            //Buisness Rule Validation
+            if (orderType == OrderType.DINE_IN && tableNumber == null)
+            {
+                throw new ArgumentException("DINE IN order must have a table.");
+            }
+            if (orderType == OrderType.TAKEAWAY && tableNumber != null)
+            {
+                throw new ArgumentException("Takeawat order cannot have a table.");
+            }
+
+            OrderId = orderId;
+            OrderType = orderType;
+            Status = status;
+            TableNumber = tableNumber;
+            StaffId = staffId;
+            CreatedAt = createdAt;
+            CompletedAt = completedAt;
+            PaymentMethod = paymentMethod;
+            TotalAmount = totalAmount;
+
+        }
     }
 }
 

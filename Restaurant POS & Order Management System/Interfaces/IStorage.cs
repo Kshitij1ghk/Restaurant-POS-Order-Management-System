@@ -15,7 +15,7 @@ namespace Restaurant_POS___Order_Management_System.Interfaces
         void SaveOrders(Dictionary<int, Order> orders);
         Dictionary<int, Order> LoadOrders();
 
-        void SaveOrderItems(Dictionary<int,OrderItem> orderItems);
+        void SaveOrderItems(Dictionary<int,List<OrderItem>> orderaItems);
         Dictionary<int, List<OrderItem>> LoadOrderItems();
 
         void SaveTables(Dictionary<int,Table> tables);

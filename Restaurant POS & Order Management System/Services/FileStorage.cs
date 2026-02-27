@@ -232,6 +232,7 @@ namespace Restaurant_POS___Order_Management_System.Services
             {
                 string line = staff.StaffId + "," +
                     staff.Name + "," +
+                    staff.StaffRole+ "," +
                     staff.IsOnDuty;
                 lines.Add(line);
             }
@@ -265,6 +266,56 @@ namespace Restaurant_POS___Order_Management_System.Services
                 }
             }
             return staffs;
+        }
+        public void SaveReceipts(Dictionary<int, Receipt> receipts)
+        {
+            List<string> lines=new List<string> ();
+            lines.Add("ReceiptId,OrderID,SubTotal,TaxAmount,TotalAmount,PayementMethod,PaidAt");
+            foreach(Receipt receipt in receipts.Values)
+            {
+                string line = receipt.ReceiptId + "," +
+                    receipt.OrderId + "," +
+                    receipt.SubTotal + "," +
+                    receipt.TaxAmount + "," +
+                    receipt.TotalAmount + "," +
+                    receipt.PaymentMethod + "," +
+                    receipt.PaidAt;
+                lines.Add(line);
+            }
+            File.WriteAllLines(RecieptFile, lines);
+        }
+
+        public Dictionary<int, Receipt> LoadReceipts()
+        {
+            Dictionary<int,Receipt> receipts=new Dictionary<int, Receipt> ();
+            if(!File.Exists(RecieptFile))
+                return receipts;
+            string[] lines=File.ReadAllLines(RecieptFile);
+            for(int i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(lines[i]))
+                    continue;
+                try
+                {
+                    string[] parts = lines[i].Split(',');
+                    int receiptId = int.Parse(parts[0]);
+                    int orderId = int.Parse(parts[1]);
+                    decimal subTotal = decimal.Parse(parts[2]);
+                    decimal taxAmount = decimal.Parse(parts[3]);
+                    decimal totalAmount = decimal.Parse(parts[4]);
+                    PaymentMethod paymentMethod = (PaymentMethod)Enum.Parse(typeof(PaymentMethod), parts[5]);
+                    DateTime paidAt = DateTime.Parse(parts[6]);
+
+                    Receipt receipt = new Receipt(receiptId, orderId, subTotal, taxAmount, totalAmount, paymentMethod, paidAt);
+                    receipts.Add(receiptId, receipt);
+                }
+                catch(Exception ex)
+                {
+                    continue;
+                }
+            }
+            return receipts;
+            
         }
     }
 }

@@ -27,6 +27,19 @@ namespace Restaurant_POS___Order_Management_System.Models
             TableNumber = tableNumber;
             Capacity = capacity;
             this.TableStatus = TableStatus.AVAILABLE;
-        }  
+        } 
+        public Table(int tableNumber,int capacity, TableStatus tableStatus)
+        {
+            if (tableNumber <= 0)
+            {
+                throw new ArgumentException("Table number is invalid must be greater than zero");
+            }
+            if (capacity < 1)
+            {
+                throw new ArgumentException("Table Capacity must be at least 1!");
+            }
+            TableNumber = tableNumber; Capacity = capacity;
+            this.TableStatus = tableStatus;
+        }
     }
 }

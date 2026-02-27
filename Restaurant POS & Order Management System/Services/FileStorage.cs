@@ -182,5 +182,47 @@ namespace Restaurant_POS___Order_Management_System.Services
             }
             return orderitems;
         }
+
+        public void SaveTables(Dictionary<int, Table> tables)
+        {
+            List<string> lines = new List<string>();
+            lines.Add("TableNumber,Capacity,TableStatus");
+            foreach(Table table in tables.Values)
+            {
+                string line = table.TableNumber+","+
+                    table.Capacity+","+
+                    table.TableStatus;
+                lines.Add(line);
+
+            }
+            File.WriteAllLines(TablesFile, lines);
+        }
+        public Dictionary<int, Table> LoadTables()
+        {
+            Dictionary<int,Table> tables=new Dictionary<int,Table>();
+            if (!File.Exists(TablesFile))
+                return tables;
+            string[] lines = File.ReadAllLines(TablesFile);
+            for(int i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(lines[i]))
+                    continue;
+                try
+                {
+                    string[] parts = lines[i].Split(',');
+                    int tableNumber = int.Parse(parts[0]);
+                    int capacity = int.Parse(parts[1]);
+                    TableStatus tableStatus = (TableStatus)Enum.Parse(typeof(TableStatus), parts[2]);
+                     Table table=new Table(tableNumber, capacity, tableStatus);
+                    tables.Add(tableNumber, table);
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                }
+            }
+            return tables;
+
+        }
     }
 }

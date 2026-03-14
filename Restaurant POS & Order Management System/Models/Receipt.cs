@@ -50,7 +50,7 @@ namespace Restaurant_POS___Order_Management_System.Models
             }
             if (totalAmount != subTotal + taxAmount)
             {
-                throw new ArgumentException("Total amount must equal subtotal plus tax")
+                throw new ArgumentException("Total amount must equal subtotal plus tax");
             }
             
             ReceiptId = receiptId;

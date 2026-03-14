@@ -20,6 +20,8 @@ namespace Restaurant_POS___Order_Management_System.Services
         // Think of it as the manager loading all information when restaurant opens for the day
         public OrderService(IStorage storage)
         {
+            // Store the storage object so we can use it later to save/load data
+            // IStorage is the interface, FileStorage is the actual implementation
             this.storage= storage;
             menuItems=storage.LoadMenuItems();
             orders=storage.LoadOrders();
@@ -27,6 +29,46 @@ namespace Restaurant_POS___Order_Management_System.Services
             tables=storage.LoadTables();
             staffs=storage.LoadStaff();
             receipts=storage.LoadReceipts();
+        }
+
+        // AddMenuItem - Creates a new menu item and adds it to the system
+        // 1. Creates a new MenuItem object with the provided details
+        // 2. Adds it to the in-memory dictionary for quick access
+        // 3. Saves the updated dictionary to CSV so data is not lost when program closes
+        public void AddMenuItem(int menuItemId, string name, decimal price, MenuCategory menucategory, FoodCategory foodcategory
+            , string description)
+        {
+            if (menuItems.ContainsKey(menuItemId))
+            {
+                throw new ArgumentException("The menu item with this id already exists");
+            }
+            MenuItem menuItem = new MenuItem(menuItemId,name,price,menucategory,foodcategory,description);
+            menuItems.Add(menuItemId, menuItem);
+            storage.SaveMenuItems(menuItems);
+        }
+
+        public void RemoveMenuItem(int menuItemId)
+        {
+            if (!menuItems.ContainsKey(menuItemId))
+            {
+                throw new ArgumentException($"MenuItem With ID{menuItemId} does not exist ");
+
+            }
+            else
+            {
+                menuItems.Remove(menuItemId);
+                storage.SaveMenuItems(menuItems);
+            }
+        }
+        public void UpdateMenuItemPrice(int menuItemId,decimal price)
+        {
+            if (!menuItems.ContainsKey(menuItemId))
+            {
+                throw new ArgumentException($"MenuItem With ID{menuItemId} does not exist ");
+
+            }
+            menuItems[menuItemId].UpdatePrice(price);
+            storage.SaveMenuItems(menuItems);
         }
     }
 }

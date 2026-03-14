@@ -83,5 +83,15 @@ namespace Restaurant_POS___Order_Management_System.Models
             // IMPORTANT
             IsAvailable = isAvailable;
         }
+
+
+        public void UpdatePrice(decimal newPrice)
+        {
+            if(newPrice < 0)
+            {
+                throw new ArgumentException("The price you entered is invalid");
+            }
+            Price = newPrice;
+        }
     }
 }

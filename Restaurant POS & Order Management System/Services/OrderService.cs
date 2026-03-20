@@ -2,6 +2,7 @@
 using Restaurant_POS___Order_Management_System.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 
 namespace Restaurant_POS___Order_Management_System.Services
 {
@@ -69,6 +70,44 @@ namespace Restaurant_POS___Order_Management_System.Services
             }
             menuItems[menuItemId].UpdatePrice(price);
             storage.SaveMenuItems(menuItems);
+        }
+
+        //TABLE MANAGEMENT
+        public void AddTable(int tableNumber,int capacity)
+        {
+            if (tables.ContainsKey(tableNumber))
+            {
+                throw new ArgumentException($"Table with this Table Number: {tableNumber}already exists");
+            }
+            Table table = new Table(tableNumber,capacity);
+            tables.Add(tableNumber, table);
+            storage.SaveTables(tables);
+        }
+
+        public void RemoveTable(int tableNumber)
+        {
+            if (!tables.ContainsKey(tableNumber))
+            {
+                throw new ArgumentException($"Table with this Table Number: {tableNumber} does not exists");
+            }
+            tables.Remove(tableNumber);
+            storage.SaveTables(tables);
+        }
+        public List<Table> GetAvailableTables()
+        {
+            List<Table> availableTables=new List<Table>();
+            foreach(var table in tables.Values)
+            {
+                if (table.TableStatus == TableStatus.AVAILABLE)
+                {
+                    availableTables.Add(table);
+                }
+            }
+            if(availableTables.Count == 0)
+            {
+                throw new ArgumentException("There are no avaialble Tables");
+            }
+            return availableTables;
         }
     }
 }

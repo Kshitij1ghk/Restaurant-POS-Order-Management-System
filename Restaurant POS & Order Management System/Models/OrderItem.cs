@@ -39,5 +39,14 @@ namespace Restaurant_POS___Order_Management_System.Models
             Quantitiy = quantity;
             PriceAtTimeOfOrder = priceAtTimeOfOrder;
         }
+
+        public void IncreaseQuantity(int quantity)
+        {
+            if (quantity <= 0)
+            {
+                throw new ArgumentException("quantity you entered is invalid");
+            }
+            Quantitiy += quantity;
+        }
     }
 }

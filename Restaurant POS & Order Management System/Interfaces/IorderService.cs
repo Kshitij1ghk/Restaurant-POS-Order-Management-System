@@ -47,5 +47,7 @@ namespace Restaurant_POS___Order_Management_System.Interfaces
         //REPORTS
 
         void GenerateDailySalesReport(DateTime date);
+
+        
     }
 }

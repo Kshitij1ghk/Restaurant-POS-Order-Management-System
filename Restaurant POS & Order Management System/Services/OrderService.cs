@@ -3,6 +3,7 @@ using Restaurant_POS___Order_Management_System.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 
 namespace Restaurant_POS___Order_Management_System.Services
 {
@@ -108,6 +109,108 @@ namespace Restaurant_POS___Order_Management_System.Services
                 throw new ArgumentException("There are no avaialble Tables");
             }
             return availableTables;
+        }
+
+        //Order Management
+
+        public void CreateDineInOrder(int orderId,int? tableNumber,int staffId)
+        {
+            if (orders.ContainsKey(orderId))
+            {
+                throw new ArgumentException("Order with this id already exists");
+            }
+            Order order=new Order(orderId,OrderType.DINE_IN,tableNumber,staffId);
+            orders.Add(orderId,order);
+            storage.SaveOrders(orders);
+        }
+
+        public void CreateTakeAwayOrder(int orderId,int staffId)
+        {
+            if (orders.ContainsKey(orderId))
+            {
+                throw new ArgumentException("The Order with this id already exists");
+            }
+            Order order = new Order(orderId, OrderType.TAKEAWAY,null, staffId);
+            orders.Add(orderId, order);
+            storage.SaveOrders(orders);
+        }
+
+        public void AddItemToOrder(int orderId,int menuItemId,int quantity)
+        {
+            if (!(orders.ContainsKey(orderId)))
+            {
+                throw new ArgumentException("Order with this Id Does Not Exist");
+            }
+            else if (!(menuItems.ContainsKey(menuItemId)))
+            {
+                throw new ArgumentException("MenuItem with this ID does not exist");
+            }
+            else if (orders[orderId].Status==OrderStatus
+                .CANCELLED|| orders[orderId].Status == OrderStatus.PAID)
+            {
+                throw new ArgumentException("Cannot add items to a CANCELLED or PAID orderd");
+            }
+            else if(orderItems.ContainsKey(orderId))
+            {
+                OrderItem existingItem = orderItems[orderId].Find(item => item.MenuItemId == menuItemId);
+
+                if (existingItem != null)
+                {
+                    // item already exists → increase quantity
+                    existingItem.IncreaseQuantity(quantity);
+                }
+                else
+                {
+                    // item doesn't exist → add new OrderItem to the list
+                    decimal price = menuItems[menuItemId].Price;
+                    OrderItem newItem = new OrderItem(orderId, menuItemId, quantity, price);
+                    orderItems[orderId].Add(newItem);
+                }
+            }
+            else
+            {
+                //order has no items yet so we create a new list with this item
+                decimal price = menuItems[menuItemId].Price;
+                OrderItem newItem=new OrderItem(orderId, menuItemId, quantity, price);
+                orderItems.Add(orderId,new List<OrderItem> { newItem });
+            }
+            decimal newTotal = 0;
+            foreach(OrderItem item in orderItems[orderId])
+            {
+                newTotal += item.PriceAtTimeOfOrder * item.Quantitiy;
+            }
+            orders[orderId].UpdateTotal(newTotal);
+
+            storage.SaveOrderItems(orderItems);
+            storage.SaveOrders(orders);
+
+        }
+        ///we needed to add a food item to an existing Order 
+        ///so we first took The AddItemToOrder method defined in Interface to implement it here
+        ///then we checked the validations in it first if such order id exists then menuitemID
+        ///then we addedd a validation for order status that is cancelled or paid 
+        ///then we used else if(orderItems.ContainsKey(orderId)) to check if this order already has any items
+        ///if yes we enter the block
+        ///then OrderItem existingItem = orderItems[orderId].Find(item => item.MenuItemId == menuItemId);
+        ///Breaking this down:
+        ///- `orderItems[orderId]` → gets the **list of items** for this order
+        ///- `.Find(...)` → built-in method that searches through the list
+        ///- `item => item.MenuItemId == menuItemId` → **for each item in the list, check if its MenuItemId matches * *
+        ///-If found → returns that `OrderItem`
+        //- If not found → returns `null`
+        ///example
+        ///Order 1 has: [Burger(101), Coke(102), Fries(103)]
+        ///Find(item => item.MenuItemId == 102)
+        ///yes returns coke
+        ///if item was was found jusgt increase its quantity no duplicate created
+        ///else if itme not found create a breand new OrderItem and add it to the existing list
+        ///now if order has no items yet
+        ///we create a new list with this item and recalculate total
+        ///then we save it to the csv
+        ///
+        public void RemoveItemFromOrder(int orderId,int menuiItem)
+        {
+
         }
     }
 }

@@ -99,6 +99,14 @@ namespace Restaurant_POS___Order_Management_System.Models
             TotalAmount = totalAmount;
 
         }
+        public void UpdateTotal(decimal totalAmount)
+        {
+            if (totalAmount < 0)
+            {
+                throw new ArgumentException("This is an invalid total Amount");
+            }
+            TotalAmount = totalAmount;
+        }
     }
 }
 

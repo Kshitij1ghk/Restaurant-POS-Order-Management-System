@@ -2,19 +2,20 @@
 using Restaurant_POS___Order_Management_System.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 
 namespace Restaurant_POS___Order_Management_System.Services
 {
-    public class OrderService:IOrderService
+    public class OrderService : IOrderService
     {
         private Dictionary<int, MenuItem> menuItems;
         private Dictionary<int, Order> orders;
         private Dictionary<int, List<OrderItem>> orderItems;
         private Dictionary<int, Table> tables;
         private Dictionary<int, Staff> staffs;
-        private Dictionary<int,Receipt> receipts;
+        private Dictionary<int, Receipt> receipts;
         private IStorage storage;
 
         // Constructor - This is called when OrderService is created in Program.cs
@@ -24,13 +25,13 @@ namespace Restaurant_POS___Order_Management_System.Services
         {
             // Store the storage object so we can use it later to save/load data
             // IStorage is the interface, FileStorage is the actual implementation
-            this.storage= storage;
-            menuItems=storage.LoadMenuItems();
-            orders=storage.LoadOrders();
-            orderItems=storage.LoadOrderItems();
-            tables=storage.LoadTables();
-            staffs=storage.LoadStaff();
-            receipts=storage.LoadReceipts();
+            this.storage = storage;
+            menuItems = storage.LoadMenuItems();
+            orders = storage.LoadOrders();
+            orderItems = storage.LoadOrderItems();
+            tables = storage.LoadTables();
+            staffs = storage.LoadStaff();
+            receipts = storage.LoadReceipts();
         }
 
         // AddMenuItem - Creates a new menu item and adds it to the system
@@ -44,7 +45,7 @@ namespace Restaurant_POS___Order_Management_System.Services
             {
                 throw new ArgumentException("The menu item with this id already exists");
             }
-            MenuItem menuItem = new MenuItem(menuItemId,name,price,menucategory,foodcategory,description);
+            MenuItem menuItem = new MenuItem(menuItemId, name, price, menucategory, foodcategory, description);
             menuItems.Add(menuItemId, menuItem);
             storage.SaveMenuItems(menuItems);
         }
@@ -62,7 +63,7 @@ namespace Restaurant_POS___Order_Management_System.Services
                 storage.SaveMenuItems(menuItems);
             }
         }
-        public void UpdateMenuItemPrice(int menuItemId,decimal price)
+        public void UpdateMenuItemPrice(int menuItemId, decimal price)
         {
             if (!menuItems.ContainsKey(menuItemId))
             {
@@ -74,13 +75,13 @@ namespace Restaurant_POS___Order_Management_System.Services
         }
 
         //TABLE MANAGEMENT
-        public void AddTable(int tableNumber,int capacity)
+        public void AddTable(int tableNumber, int capacity)
         {
             if (tables.ContainsKey(tableNumber))
             {
                 throw new ArgumentException($"Table with this Table Number: {tableNumber}already exists");
             }
-            Table table = new Table(tableNumber,capacity);
+            Table table = new Table(tableNumber, capacity);
             tables.Add(tableNumber, table);
             storage.SaveTables(tables);
         }
@@ -96,15 +97,15 @@ namespace Restaurant_POS___Order_Management_System.Services
         }
         public List<Table> GetAvailableTables()
         {
-            List<Table> availableTables=new List<Table>();
-            foreach(var table in tables.Values)
+            List<Table> availableTables = new List<Table>();
+            foreach (var table in tables.Values)
             {
                 if (table.TableStatus == TableStatus.AVAILABLE)
                 {
                     availableTables.Add(table);
                 }
             }
-            if(availableTables.Count == 0)
+            if (availableTables.Count == 0)
             {
                 throw new ArgumentException("There are no avaialble Tables");
             }
@@ -113,29 +114,29 @@ namespace Restaurant_POS___Order_Management_System.Services
 
         //Order Management
 
-        public void CreateDineInOrder(int orderId,int? tableNumber,int staffId)
+        public void CreateDineInOrder(int orderId, int? tableNumber, int staffId)
         {
             if (orders.ContainsKey(orderId))
             {
                 throw new ArgumentException("Order with this id already exists");
             }
-            Order order=new Order(orderId,OrderType.DINE_IN,tableNumber,staffId);
-            orders.Add(orderId,order);
+            Order order = new Order(orderId, OrderType.DINE_IN, tableNumber, staffId);
+            orders.Add(orderId, order);
             storage.SaveOrders(orders);
         }
 
-        public void CreateTakeAwayOrder(int orderId,int staffId)
+        public void CreateTakeAwayOrder(int orderId, int staffId)
         {
             if (orders.ContainsKey(orderId))
             {
                 throw new ArgumentException("The Order with this id already exists");
             }
-            Order order = new Order(orderId, OrderType.TAKEAWAY,null, staffId);
+            Order order = new Order(orderId, OrderType.TAKEAWAY, null, staffId);
             orders.Add(orderId, order);
             storage.SaveOrders(orders);
         }
 
-        public void AddItemToOrder(int orderId,int menuItemId,int quantity)
+        public void AddItemToOrder(int orderId, int menuItemId, int quantity)
         {
             if (!(orders.ContainsKey(orderId)))
             {
@@ -145,12 +146,12 @@ namespace Restaurant_POS___Order_Management_System.Services
             {
                 throw new ArgumentException("MenuItem with this ID does not exist");
             }
-            else if (orders[orderId].Status==OrderStatus
-                .CANCELLED|| orders[orderId].Status == OrderStatus.PAID)
+            else if (orders[orderId].Status == OrderStatus
+                .CANCELLED || orders[orderId].Status == OrderStatus.PAID)
             {
                 throw new ArgumentException("Cannot add items to a CANCELLED or PAID orderd");
             }
-            else if(orderItems.ContainsKey(orderId))
+            else if (orderItems.ContainsKey(orderId))
             {
                 OrderItem existingItem = orderItems[orderId].Find(item => item.MenuItemId == menuItemId);
 
@@ -171,11 +172,11 @@ namespace Restaurant_POS___Order_Management_System.Services
             {
                 //order has no items yet so we create a new list with this item
                 decimal price = menuItems[menuItemId].Price;
-                OrderItem newItem=new OrderItem(orderId, menuItemId, quantity, price);
-                orderItems.Add(orderId,new List<OrderItem> { newItem });
+                OrderItem newItem = new OrderItem(orderId, menuItemId, quantity, price);
+                orderItems.Add(orderId, new List<OrderItem> { newItem });
             }
             decimal newTotal = 0;
-            foreach(OrderItem item in orderItems[orderId])
+            foreach (OrderItem item in orderItems[orderId])
             {
                 newTotal += item.PriceAtTimeOfOrder * item.Quantitiy;
             }
@@ -208,9 +209,74 @@ namespace Restaurant_POS___Order_Management_System.Services
         ///we create a new list with this item and recalculate total
         ///then we save it to the csv
         ///
-        public void RemoveItemFromOrder(int orderId,int menuiItem)
+        public void RemoveItemFromOrder(int orderId, int menuiItem)
         {
+            if (!orders.ContainsKey(orderId))
+            {
+                throw new ArgumentException("No such order ID exists");
+            }
+            if (!orderItems.ContainsKey(orderId))
+            {
+                throw new ArgumentException("This order has no items");
 
+            }
+            OrderItem existingItem = orderItems[orderId].Find(item => item.MenuItemId == menuiItem);
+
+            if (existingItem == null)
+            {
+                throw new ArgumentException("This item does not exist in the order");
+            }
+
+            orderItems[orderId].Remove(existingItem);
+
+            decimal newTotal = 0;
+            foreach(OrderItem item in orderItems[orderId])
+            {
+                newTotal += item.PriceAtTimeOfOrder * item.Quantitiy;
+            }
+            orders[orderId].UpdateTotal(newTotal);
+            storage.SaveOrderItems(orderItems);
+            storage.SaveOrders(orders);
         }
+
+        public void AdvanceOrderStatus(int orderId)
+        {
+            if (!orders.ContainsKey(orderId))
+            {
+                throw new ArgumentException("order with this ID does not exist");
+            }
+
+            if (orders[orderId].Status==OrderStatus.PENDING)
+                orders[orderId].UpdateStatus(OrderStatus.PREPARING);
+            else if (orders[orderId].Status == OrderStatus.PREPARING)
+                orders[orderId].UpdateStatus(OrderStatus.READY);
+            else if (orders[orderId].Status == OrderStatus.READY)
+                orders[orderId].UpdateStatus(OrderStatus.DELIVERED);
+            else
+                throw new ArgumentException("Order cannot be advanced further");
+
+            storage.SaveOrders(orders);
+        }
+
+        public void CancelOrder(int orderId)
+        {
+            if (!orders.ContainsKey(orderId))
+            {
+                throw new ArgumentException("Order with this ID does Not exist");
+            }
+            if (orders[orderId].Status == OrderStatus.CANCELLED)
+                throw new ArgumentException("The order is already cancelled");
+            else if (orders[orderId].Status == OrderStatus.PAID)
+            {
+                throw new ArgumentException("The order cant be cancelled since it has been already paid ");
+            }
+            else
+            {
+                orders[orderId].UpdateStatus(OrderStatus.CANCELLED);
+            }
+            storage.SaveOrders(orders);
+        }
+
+        public 
     }
 }

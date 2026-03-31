@@ -107,6 +107,11 @@ namespace Restaurant_POS___Order_Management_System.Models
             }
             TotalAmount = totalAmount;
         }
+
+        public void UpdateStatus(OrderStatus status)
+        {
+            this.Status = status;
+        }
     }
 }
 
